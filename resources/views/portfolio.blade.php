@@ -446,7 +446,10 @@
         <div class="hero-image-wrap">
             <div class="hero-image-bg"></div>
             <div class="hero-image-card">
-                <img src="{{ asset('images/omie.jpeg') }}" alt="Naomi">
+                <!-- <img src="{{ asset('images/omie.jpeg') }}" alt="Naomi"> -->
+                    <!-- <img src="{{ asset('images/naomi.jpeg') }}" alt="Naomi"> -->
+                 <img src="{{ asset('images/naomi.jpeg') }}" alt="Naomi" ... 
+    style="width:100%; height:100%; object-fit:cover; object-position:center 10%;">
             </div>
             <div class="hero-name-tag">
                 <p>Based in</p>
@@ -510,8 +513,9 @@
         <a href="#contact" class="btn-primary">Work with me</a>
     </div>
     <div class="about-right fade-up">
-        <div class="about-photo">
-            <img src="{{ asset('images/omie.jpeg') }}" alt="Naomi">
+        <div class="about-photo" style="width:100%; height:180px; border-radius:30px; overflow:hidden; margin-bottom:1.5rem;">
+                 <img src="{{ asset('images/naomi.jpeg') }}" alt="Naomi" ... 
+    style="width:100%; height:70%; object-fit:cover; object-position:center 4%;">
         </div>
         <div class="about-card">
             <p>"I believe every pixel has a purpose and every line of code tells a story."</p>
@@ -610,17 +614,17 @@
             </div>
         </div>
         <div class="contact-right fade-up">
-            @if(session('success'))
-                <div class="msg-success">✦ {{ session('success') }}</div>
-            @endif
-            @if($errors->any())
-                <div class="msg-error">⚠️ Please fill in all fields correctly.</div>
-            @endif
-            <form action="{{ route('contact') }}" method="POST" id="contactForm">
-                @csrf
-                <input type="text" name="name" id="fname" placeholder="Your name" value="{{ old('name') }}" required>
-                <input type="email" name="email" id="femail" placeholder="Your email" value="{{ old('email') }}" required>
-                <textarea name="message" id="fmessage" placeholder="Tell me about your project..." required>{{ old('message') }}</textarea>
+            <div id="msg-success" class="msg-success" style="display:none;">✦ Message sent! I'll get back to you soon.</div>
+            <div id="msg-error" class="msg-error" style="display:none;">Something went wrong. Please try again.</div>
+
+            <form action="https://api.web3forms.com/submit" method="POST" id="contactForm">
+                <input type="hidden" name="access_key" value="87975499-94f3-446c-8da0-017098bf6ce3">
+                <input type="hidden" name="subject" value="New Portfolio Message">
+                <input type="hidden" name="redirect" value="false">
+
+                <input type="text" name="name" id="fname" placeholder="Your name" required>
+                <input type="email" name="email" id="femail" placeholder="Your email" required>
+                <textarea name="message" id="fmessage" placeholder="Tell me about your project..." required></textarea>
                 <button type="submit">Send Message ✦</button>
             </form>
         </div>
@@ -648,11 +652,24 @@
     }, { threshold: 0.1 });
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-    @if(session('success'))
-        document.getElementById('fname').value = '';
-        document.getElementById('femail').value = '';
-        document.getElementById('fmessage').value = '';
-    @endif
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const data = new FormData(form);
+        const res = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: data
+        });
+        const json = await res.json();
+        if (json.success) {
+            document.getElementById('msg-success').style.display = 'block';
+            document.getElementById('msg-error').style.display = 'none';
+            form.reset();
+        } else {
+            document.getElementById('msg-error').style.display = 'block';
+            document.getElementById('msg-success').style.display = 'none';
+        }
+    });
 </script>
 </body>
 </html>
