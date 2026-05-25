@@ -384,12 +384,7 @@
         .project-body p { font-size: 0.88rem; color: #6B4F5A; line-height: 1.7; font-weight: 300; }
 
         /* CONTACT */
-        #contact {
-            background: linear-gradient(135deg, #1A0A10 0%, #2C1A22 50%, #1A0A10 100%);
-            max-width: 100%; padding: 6rem 3rem;
-            border-radius: 32px; margin: 0 3rem 4rem;
-            position: relative; overflow: hidden;
-        }
+       
         #contact::before {
             content: '';
             position: absolute;
@@ -398,7 +393,21 @@
             top: -200px; right: -100px;
             pointer-events: none;
         }
-        .contact-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+
+        #contact {
+    background: linear-gradient(135deg, #1A0A10 0%, #2C1A22 50%, #1A0A10 100%);
+    max-width: 100%; padding: 6rem 3rem;
+    border-radius: 32px; margin: 0 3rem 4rem;
+    position: relative; overflow: hidden;
+}
+.contact-inner { 
+    max-width: 1000px; 
+    margin: 0 auto; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 5rem; 
+    align-items: center;
+}
         .contact-left .section-label span { color: var(--blush); }
         .contact-left .section-label::before { background: var(--blush); }
         .contact-left .section-title { color: white; }
@@ -763,13 +772,22 @@
 
         <div class="contact-right fade-up">
             @if(session('success'))
-                <div class="alert-success">✦ {{ session('success') }}</div>
+                <div style="background:rgba(181,196,177,0.2); color:#B5C4B1; border:1px solid rgba(181,196,177,0.3); padding:1rem 1.2rem; border-radius:12px; margin-bottom:1.5rem; font-size:0.9rem; text-align:center;">
+                    ✦ {{ session('success') }}
+                </div>
             @endif
-            <form action="{{ route('contact') }}" method="POST">
+
+            @if($errors->any())
+                <div style="background:rgba(212,137,154,0.2); color:#F2C4CE; border:1px solid rgba(212,137,154,0.3); padding:1rem 1.2rem; border-radius:12px; margin-bottom:1.5rem; font-size:0.9rem; text-align:center;">
+                    ⚠️ Please fill in all fields correctly.
+                </div>
+            @endif
+
+            <form action="{{ route('contact') }}" method="POST" id="contactForm">
                 @csrf
-                <input type="text" name="name" placeholder="Your name" value="{{ old('name') }}" required>
-                <input type="email" name="email" placeholder="Your email" value="{{ old('email') }}" required>
-                <textarea name="message" placeholder="Tell me about your project..." required>{{ old('message') }}</textarea>
+                <input type="text" name="name" id="name" placeholder="Your name" value="{{ old('name') }}" required>
+                <input type="email" name="email" id="email" placeholder="Your email" value="{{ old('email') }}" required>
+                <textarea name="message" id="message" placeholder="Tell me about your project..." required>{{ old('message') }}</textarea>
                 <button type="submit">Send Message ✦</button>
             </form>
         </div>
@@ -810,6 +828,14 @@
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Clear form after success
+@if(session('success'))
+    document.getElementById('name').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('message').value = '';
+@endif
+
 </script>
 </body>
 </html>
